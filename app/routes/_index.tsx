@@ -19,6 +19,61 @@ export default function Index() {
         </p>
       </div>
 
+      <div className="my-8 border p-3">
+        <form>
+          <p className="italic">Create an entry</p>
+          <div>
+            <div className="mt-4">
+              <input type="date" name="date" className="text-gray-700" />
+            </div>
+            <div className="mt-5 space-x-6">
+              <label>
+                <input
+                  className="mr-1"
+                  type="radio"
+                  name="category"
+                  value="work"
+                />
+                Work
+              </label>
+              <label>
+                <input
+                  className="mr-1"
+                  type="radio"
+                  name="category"
+                  value="learning"
+                />
+                Learning
+              </label>
+              <label>
+                <input
+                  className="mr-1"
+                  type="radio"
+                  name="category"
+                  value="interesting-thing"
+                />
+                Interesting thing
+              </label>
+            </div>
+            <div className="mt-2">
+              <textarea
+                className="w-full text-gray-700"
+                placeholder="Write your entry..."
+              ></textarea>
+            </div>
+
+            <div className="mt-1 text-right">
+              <button
+                type="submit"
+                className="bg-blue-500 px-4 py-1 font-medium text-white"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
       <div className="mt-3 space-y-4">
         <div>
           <p>Work</p>
