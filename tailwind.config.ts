@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        gray: colors.zinc,
+        gray: colors.neutral,
       },
     },
   },
