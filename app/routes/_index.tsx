@@ -1,6 +1,7 @@
 import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
 import { Form } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
+import { PrismaClient } from "@prisma/client";
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,9 +11,16 @@ export const meta: MetaFunction = () => {
 };
 
 export async function action({ request }: ActionFunctionArgs) {
+  const db = new PrismaClient();
   const formData = await request.formData();
   const json = Object.fromEntries(formData);
-  console.log("form data", json);
+  await db.entry.create({
+    data: {
+      date: new Date("2023-03-07"),
+      type: "work",
+      text: "some text",
+    },
+  });
   return redirect("/");
 }
 
