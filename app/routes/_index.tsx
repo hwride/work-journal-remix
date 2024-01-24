@@ -13,12 +13,21 @@ export const meta: MetaFunction = () => {
 export async function action({ request }: ActionFunctionArgs) {
   const db = new PrismaClient();
   const formData = await request.formData();
-  const json = Object.fromEntries(formData);
+  const { date, type, text } = Object.fromEntries(formData);
+
+  if (
+    typeof date !== "string" ||
+    typeof type !== "string" ||
+    typeof text !== "string"
+  ) {
+    throw new Error("Bad request");
+  }
+
   await db.entry.create({
     data: {
-      date: new Date("2023-03-07"),
-      type: "work",
-      text: "some text",
+      date: new Date(date),
+      type: type,
+      text: text,
     },
   });
   return redirect("/");
@@ -45,19 +54,14 @@ export default function Index() {
             </div>
             <div className="mt-5 space-x-6">
               <label>
-                <input
-                  className="mr-1"
-                  type="radio"
-                  name="category"
-                  value="work"
-                />
+                <input className="mr-1" type="radio" name="type" value="work" />
                 Work
               </label>
               <label>
                 <input
                   className="mr-1"
                   type="radio"
-                  name="category"
+                  name="type"
                   value="learning"
                 />
                 Learning
@@ -66,7 +70,7 @@ export default function Index() {
                 <input
                   className="mr-1"
                   type="radio"
-                  name="category"
+                  name="type"
                   value="interesting-thing"
                 />
                 Interesting thing
