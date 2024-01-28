@@ -1,5 +1,5 @@
 import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
-import { Form, useFetcher } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import { PrismaClient } from "@prisma/client";
 import { format } from "date-fns";
@@ -35,7 +35,15 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect("/");
 }
 
+export async function loader() {
+  const db = new PrismaClient();
+  const entries = await db.entry.findMany();
+  return entries;
+}
+
 export default function Index() {
+  const entries = useLoaderData<typeof loader>();
+
   const fetcher = useFetcher();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -127,27 +135,9 @@ export default function Index() {
       </div>
 
       <div className="mt-3 space-y-4">
-        <div>
-          <p>Work</p>
-          <ul className="ml-8 list-disc pl-4">
-            <li>Item 1</li>
-            <li>Item 2</li>
-          </ul>
-        </div>
-        <div>
-          <p>Learnings</p>
-          <ul className="ml-8 list-disc pl-4">
-            <li>Item 1</li>
-            <li>Item 2</li>
-          </ul>
-        </div>
-        <div>
-          <p>Interesting things</p>
-          <ul className="ml-8 list-disc pl-4">
-            <li>Item 1</li>
-            <li>Item 2</li>
-          </ul>
-        </div>
+        {entries.map((entry) => (
+          <p key={entry.id}>{entry.text}</p>
+        ))}
       </div>
     </div>
   );
