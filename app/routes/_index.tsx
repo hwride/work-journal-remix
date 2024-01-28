@@ -1,5 +1,5 @@
 import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { Form, useFetcher } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import { PrismaClient } from "@prisma/client";
 
@@ -34,6 +34,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Index() {
+  const fetcher = useFetcher();
+
   return (
     <div className="p-10">
       <h1 className="text-5xl">Hello, Build UI!</h1>
@@ -46,11 +48,16 @@ export default function Index() {
       </div>
 
       <div className="my-8 border p-3">
-        <Form method="post">
+        <fetcher.Form method="post">
           <p className="italic">Create an entry</p>
           <div>
             <div className="mt-4">
-              <input type="date" name="date" className="text-gray-700" />
+              <input
+                type="date"
+                name="date"
+                required
+                className="text-gray-700"
+              />
             </div>
             <div className="mt-5 space-x-6">
               <label>
@@ -62,6 +69,7 @@ export default function Index() {
                   className="mr-1"
                   type="radio"
                   name="type"
+                  required
                   value="learning"
                 />
                 Learning
@@ -71,6 +79,7 @@ export default function Index() {
                   className="mr-1"
                   type="radio"
                   name="type"
+                  required
                   value="interesting-thing"
                 />
                 Interesting thing
@@ -89,11 +98,11 @@ export default function Index() {
                 type="submit"
                 className="bg-blue-500 px-4 py-1 font-medium text-white"
               >
-                Submit
+                {fetcher.state === "submitting" ? "Saving..." : "Save"}
               </button>
             </div>
           </div>
-        </Form>
+        </fetcher.Form>
       </div>
 
       <div className="mt-3 space-y-4">
