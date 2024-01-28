@@ -38,7 +38,10 @@ export async function action({ request }: ActionFunctionArgs) {
 export async function loader() {
   const db = new PrismaClient();
   const entries = await db.entry.findMany();
-  return entries;
+  return entries.map((entry) => ({
+    ...entry,
+    date: entry.date.toISOString().substring(0, 10),
+  }));
 }
 
 export default function Index() {
@@ -136,7 +139,12 @@ export default function Index() {
 
       <div className="mt-3 space-y-4">
         {entries.map((entry) => (
-          <p key={entry.id}>{entry.text}</p>
+          <div key={entry.id}>
+            <p>{format(entry.date, "MMMM dd")}</p>
+            <p>
+              {entry.type} - {entry.text}
+            </p>
+          </div>
         ))}
       </div>
     </div>
