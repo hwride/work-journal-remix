@@ -3,6 +3,7 @@ import { Form, useFetcher } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import { PrismaClient } from "@prisma/client";
 import { format } from "date-fns";
+import { useEffect, useRef } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -36,6 +37,14 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Index() {
   const fetcher = useFetcher();
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && textAreaRef.current) {
+      textAreaRef.current.value = "";
+      textAreaRef.current.focus();
+    }
+  }, [fetcher.state]);
 
   return (
     <div className="p-10">
@@ -101,6 +110,7 @@ export default function Index() {
                 name="text"
                 className="w-full text-gray-700"
                 placeholder="Write your entry..."
+                ref={textAreaRef}
               ></textarea>
             </div>
 
