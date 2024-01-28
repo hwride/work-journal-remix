@@ -2,6 +2,7 @@ import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
 import { Form, useFetcher } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import { PrismaClient } from "@prisma/client";
+import { format } from "date-fns";
 
 export const meta: MetaFunction = () => {
   return [
@@ -59,12 +60,19 @@ export default function Index() {
                 type="date"
                 name="date"
                 required
-                className="text-gray-700"
+                className="text-gray-900"
+                defaultValue={format(new Date(), "yyyy-MM-dd")}
               />
             </div>
             <div className="mt-5 space-x-6">
               <label>
-                <input className="mr-1" type="radio" name="type" value="work" />
+                <input
+                  className="mr-1"
+                  type="radio"
+                  name="type"
+                  value="work"
+                  defaultChecked
+                />
                 Work
               </label>
               <label>
