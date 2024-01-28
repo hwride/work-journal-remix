@@ -50,7 +50,10 @@ export default function Index() {
       <div className="my-8 border p-3">
         <fetcher.Form method="post">
           <p className="italic">Create an entry</p>
-          <div>
+          <fieldset
+            className="disabled:opacity-70"
+            disabled={fetcher.state === "submitting"}
+          >
             <div className="mt-4">
               <input
                 type="date"
@@ -101,7 +104,7 @@ export default function Index() {
                 {fetcher.state === "submitting" ? "Saving..." : "Save"}
               </button>
             </div>
-          </div>
+          </fieldset>
         </fetcher.Form>
       </div>
 
