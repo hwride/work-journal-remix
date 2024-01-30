@@ -2,7 +2,7 @@ import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import { PrismaClient } from "@prisma/client";
-import { format } from "date-fns";
+import { format, parseISO, startOfWeek } from "date-fns";
 import { useEffect, useRef } from "react";
 
 export const meta: MetaFunction = () => {
@@ -46,6 +46,31 @@ export async function loader() {
 
 export default function Index() {
   const entries = useLoaderData<typeof loader>();
+
+  const entriesByWeek = entries.reduce<Record<string, typeof entries>>(
+    (memo, entry) => {
+      const startOfWeekVal = startOfWeek(parseISO(entry.date));
+      const startOfWeekStr = format(startOfWeekVal, "yyyy-MM-dd");
+      console.log("memo", memo);
+      memo[startOfWeekStr] ||= [];
+      memo[startOfWeekStr].push(entry);
+      return memo;
+    },
+    {},
+  );
+  const weeks = Object.keys(entriesByWeek)
+    .sort((a, b) => a.localeCompare(b))
+    .map((dateString) => ({
+      dateString,
+      work: entriesByWeek[dateString].filter((entry) => entry.type === "work"),
+      learnings: entriesByWeek[dateString].filter(
+        (entry) => entry.type === "learning",
+      ),
+      interestingThings: entriesByWeek[dateString].filter(
+        (entry) => entry.type === "interesting-thing",
+      ),
+    }));
+  console.log(weeks);
 
   const fetcher = useFetcher();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -137,13 +162,44 @@ export default function Index() {
         </fetcher.Form>
       </div>
 
-      <div className="mt-3 space-y-4">
-        {entries.map((entry) => (
-          <div key={entry.id}>
-            <p>{format(entry.date, "MMMM dd")}</p>
-            <p>
-              {entry.type} - {entry.text}
+      <div className="mt-12 space-y-12">
+        {weeks.map((week) => (
+          <div key={week.dateString}>
+            <p className="font-bold">
+              Week of {format(parseISO(week.dateString), "MMMM do")}
             </p>
+            <div className="mt-3 space-y-4">
+              {week.work.length > 0 && (
+                <div>
+                  <p>Work</p>
+                  <ul className="ml-8 list-disc">
+                    {week.work.map((entry) => (
+                      <li key={entry.id}>{entry.text}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {week.learnings.length > 0 && (
+                <div>
+                  <p>Learning</p>
+                  <ul className="ml-8 list-disc">
+                    {week.learnings.map((entry) => (
+                      <li key={entry.id}>{entry.text}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {week.interestingThings.length > 0 && (
+                <div>
+                  <p>Interesting things</p>
+                  <ul className="ml-8 list-disc">
+                    {week.interestingThings.map((entry) => (
+                      <li key={entry.id}>{entry.text}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
