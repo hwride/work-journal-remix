@@ -1,5 +1,5 @@
 import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import { PrismaClient } from "@prisma/client";
 import { format, parseISO, startOfWeek } from "date-fns";
@@ -184,7 +184,15 @@ export default function Index() {
                   <p>Learning</p>
                   <ul className="ml-8 list-disc">
                     {week.learnings.map((entry) => (
-                      <li key={entry.id}>{entry.text}</li>
+                      <li key={entry.id} className="group">
+                        {entry.text}
+                        <Link
+                          to={`/entries/${entry.id}/edit`}
+                          className="ml-2 text-blue-500 opacity-0 group-hover:opacity-100"
+                        >
+                          edit
+                        </Link>
+                      </li>
                     ))}
                   </ul>
                 </div>
