@@ -81,10 +81,7 @@ export default function Index() {
   }, [fetcher.state]);
 
   return (
-    <div className="p-10">
-      <h1 className="text-5xl">Hello, Build UI!</h1>
-      <p className="mt-2 text-lg text-gray-400">Learnings and doings</p>
-
+    <div>
       <div className="mt-4">
         <p className="font-bold">
           Week of January 22<sup>nd</sup>
