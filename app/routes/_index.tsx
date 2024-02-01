@@ -51,7 +51,6 @@ export default function Index() {
     (memo, entry) => {
       const startOfWeekVal = startOfWeek(parseISO(entry.date));
       const startOfWeekStr = format(startOfWeekVal, "yyyy-MM-dd");
-      console.log("memo", memo);
       memo[startOfWeekStr] ||= [];
       memo[startOfWeekStr].push(entry);
       return memo;
@@ -70,7 +69,6 @@ export default function Index() {
         (entry) => entry.type === "interesting-thing",
       ),
     }));
-  console.log(weeks);
 
   const fetcher = useFetcher();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
