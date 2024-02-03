@@ -79,7 +79,7 @@ export default function Index() {
       </div>
 
       <div className="my-8 border p-3">
-        <EntryForm entry={{ date: format(new Date(), "yyyy-MM-dd") }} />
+        <EntryForm />
       </div>
 
       <div className="mt-12 space-y-12">

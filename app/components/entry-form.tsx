@@ -1,16 +1,17 @@
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useRef } from "react";
+import { format } from "date-fns";
 
 export function EntryForm({
   entry,
 }: {
-  entry: { date: string; id?: number; type?: string; text?: string };
+  entry?: { date: string; id: number; type: string; text: string };
 }) {
   const fetcher = useFetcher();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (entry.text == null && fetcher.state === "idle" && textAreaRef.current) {
+    if (entry == null && fetcher.state === "idle" && textAreaRef.current) {
       textAreaRef.current.value = "";
       textAreaRef.current.focus();
     }
@@ -29,42 +30,28 @@ export function EntryForm({
             name="date"
             required
             className="text-gray-900"
-            defaultValue={entry.date}
+            defaultValue={entry?.date ?? format(new Date(), "yyyy-MM-dd")}
           />
         </div>
         <div className="mt-5 space-x-6">
-          <label>
-            <input
-              className="mr-1"
-              type="radio"
-              name="type"
-              value="work"
-              defaultChecked={entry.type === "work"}
-            />
-            Work
-          </label>
-          <label>
-            <input
-              className="mr-1"
-              type="radio"
-              name="type"
-              required
-              value="learning"
-              defaultChecked={entry.type === "learning"}
-            />
-            Learning
-          </label>
-          <label>
-            <input
-              className="mr-1"
-              type="radio"
-              name="type"
-              required
-              value="interesting-thing"
-              defaultChecked={entry.type === "interesting-thing"}
-            />
-            Interesting thing
-          </label>
+          {[
+            { label: "Work", value: "work" },
+            { label: "Learning", value: "learning" },
+            { label: "Interesting thing", value: "interesting-thing" },
+          ].map((option) => (
+            <label key={option.value}>
+              <input
+                className="mr-1"
+                type="radio"
+                name="type"
+                value={option.value}
+                defaultChecked={
+                  entry ? entry.type === option.value : option.value === "work"
+                }
+              />
+              {option.label}
+            </label>
+          ))}
         </div>
         <div className="mt-2">
           <textarea
@@ -72,7 +59,7 @@ export function EntryForm({
             className="w-full text-gray-700"
             placeholder="Write your entry..."
             ref={textAreaRef}
-            defaultValue={entry.text}
+            defaultValue={entry?.text}
           ></textarea>
         </div>
 
