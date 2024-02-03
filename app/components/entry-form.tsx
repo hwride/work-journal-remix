@@ -1,14 +1,20 @@
-import { format } from "date-fns";
 import { useFetcher } from "@remix-run/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export function EntryForm({
   entry,
 }: {
-  entry: { date: string; id: number; type: string; text: string };
+  entry: { date: string; id?: number; type?: string; text?: string };
 }) {
   const fetcher = useFetcher();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (entry.text == null && fetcher.state === "idle" && textAreaRef.current) {
+      textAreaRef.current.value = "";
+      textAreaRef.current.focus();
+    }
+  }, [entry, fetcher.state]);
 
   return (
     <fetcher.Form method="post">
