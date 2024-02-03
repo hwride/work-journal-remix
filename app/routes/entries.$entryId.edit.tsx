@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { EntryForm } from "~/components/entry-form";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const db = new PrismaClient();
@@ -24,6 +25,9 @@ export default function EditPage() {
   return (
     <div className="mt-4">
       <p>Editing entry {entry.id}</p>
+      <div className="mt-5">
+        <EntryForm entry={entry} />
+      </div>
     </div>
   );
 }
