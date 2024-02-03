@@ -1,5 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { LoaderFunctionArgs } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  redirect,
+} from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { EntryForm } from "~/components/entry-form";
 
@@ -17,6 +21,30 @@ export async function loader({ params }: LoaderFunctionArgs) {
     ...entry,
     date: entry?.date.toISOString().substring(0, 10),
   };
+}
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  const db = new PrismaClient();
+  const formData = await request.formData();
+  const { date, type, text } = Object.fromEntries(formData);
+
+  if (
+    typeof date !== "string" ||
+    typeof type !== "string" ||
+    typeof text !== "string"
+  ) {
+    throw new Error("Bad request");
+  }
+
+  await db.entry.update({
+    where: { id: Number(params.entryId) },
+    data: {
+      date: new Date(date),
+      type: type,
+      text: text,
+    },
+  });
+  return redirect("/");
 }
 
 export default function EditPage() {
