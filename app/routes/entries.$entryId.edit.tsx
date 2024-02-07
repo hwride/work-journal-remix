@@ -6,6 +6,7 @@ import {
 } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { EntryForm } from "~/components/entry-form";
+import { FormEvent } from "react";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const db = new PrismaClient();
@@ -57,13 +58,20 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function EditPage() {
   const entry = useLoaderData<typeof loader>();
 
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    const wantsToDelete = confirm("Are you sure?");
+    if (!wantsToDelete) {
+      e.preventDefault();
+    }
+  }
+
   return (
     <div className="mt-4">
       <p>Editing entry {entry.id}</p>
       <div className="mt-5">
         <EntryForm entry={entry} />
         <div className="mt-8">
-          <Form method="post">
+          <Form method="post" onSubmit={handleSubmit}>
             <button
               name="action"
               value="_delete"
