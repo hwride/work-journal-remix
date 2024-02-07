@@ -20,9 +20,10 @@ export function EntryForm({
   return (
     <fetcher.Form method="post">
       <p className="italic">Create an entry</p>
+      {/* Disable when not idle, also disables when action is done but data is still loading. */}
       <fieldset
         className="disabled:opacity-70"
-        disabled={fetcher.state === "submitting"}
+        disabled={fetcher.state !== "idle"}
       >
         <div className="mt-4">
           <input
