@@ -4,7 +4,7 @@ import {
   LoaderFunctionArgs,
   redirect,
 } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import { EntryForm } from "~/components/entry-form";
 
 export async function loader({ params }: LoaderFunctionArgs) {
@@ -26,24 +26,31 @@ export async function loader({ params }: LoaderFunctionArgs) {
 export async function action({ request, params }: ActionFunctionArgs) {
   const db = new PrismaClient();
   const formData = await request.formData();
-  const { date, type, text } = Object.fromEntries(formData);
+  const dataEntries = Object.fromEntries(formData);
+  if (dataEntries.action === "_delete") {
+    await db.entry.delete({
+      where: { id: Number(params.entryId) },
+    });
+  } else {
+    const { date, type, text } = dataEntries;
 
-  if (
-    typeof date !== "string" ||
-    typeof type !== "string" ||
-    typeof text !== "string"
-  ) {
-    throw new Error("Bad request");
+    if (
+      typeof date !== "string" ||
+      typeof type !== "string" ||
+      typeof text !== "string"
+    ) {
+      throw new Error("Bad request");
+    }
+
+    await db.entry.update({
+      where: { id: Number(params.entryId) },
+      data: {
+        date: new Date(date),
+        type: type,
+        text: text,
+      },
+    });
   }
-
-  await db.entry.update({
-    where: { id: Number(params.entryId) },
-    data: {
-      date: new Date(date),
-      type: type,
-      text: text,
-    },
-  });
   return redirect("/");
 }
 
@@ -55,6 +62,17 @@ export default function EditPage() {
       <p>Editing entry {entry.id}</p>
       <div className="mt-5">
         <EntryForm entry={entry} />
+        <div className="mt-8">
+          <Form method="post">
+            <button
+              name="action"
+              value="_delete"
+              className="text-gray-500 underline"
+            >
+              Delete entry
+            </button>
+          </Form>
+        </div>
       </div>
     </div>
   );
