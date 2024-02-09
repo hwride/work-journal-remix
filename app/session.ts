@@ -5,5 +5,10 @@ export const { getSession, commitSession, destroySession } =
     cookie: {
       name: "work-journal-session",
       secrets: ["work-journal-secret-1834"],
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
     },
   });
