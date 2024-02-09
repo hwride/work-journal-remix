@@ -1,5 +1,9 @@
 import { Form, useLoaderData } from "@remix-run/react";
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  redirect,
+} from "@remix-run/node";
 import { getSession, commitSession } from "~/session";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -16,7 +20,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (email === "test@example.com" && password === "password") {
     const session = await getSession();
     session.set("isAdmin", true);
-    return new Response("", {
+    return redirect("/", {
       headers: {
         "Set-Cookie": await commitSession(session),
       },
