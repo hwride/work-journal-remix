@@ -1,9 +1,14 @@
-import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
+import type {
+  MetaFunction,
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import { PrismaClient } from "@prisma/client";
 import { format, parseISO, startOfWeek } from "date-fns";
 import { EntryForm } from "~/components/entry-form";
+import { getSession } from "~/session";
 
 export const meta: MetaFunction = () => {
   return [
@@ -35,17 +40,23 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect("/");
 }
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await getSession(request.headers.get("cookie"));
+
   const db = new PrismaClient();
   const entries = await db.entry.findMany();
-  return entries.map((entry) => ({
+  const mappedEntries = entries.map((entry) => ({
     ...entry,
     date: entry.date.toISOString().substring(0, 10),
   }));
+  return {
+    entries: mappedEntries,
+    session: session.data,
+  };
 }
 
 export default function Index() {
-  const entries = useLoaderData<typeof loader>();
+  const { entries, session } = useLoaderData<typeof loader>();
 
   const entriesByWeek = entries.reduce<Record<string, typeof entries>>(
     (memo, entry) => {
@@ -77,11 +88,11 @@ export default function Index() {
           Week of January 22<sup>nd</sup>
         </p>
       </div>
-
-      <div className="my-8 border p-3">
-        <EntryForm />
-      </div>
-
+      {session.isAdmin ? (
+        <div className="my-8 border p-3">
+          <EntryForm />
+        </div>
+      ) : null}
       <div className="mt-12 space-y-12">
         {weeks.map((week) => (
           <div key={week.dateString}>
@@ -130,7 +141,7 @@ export default function Index() {
 function EntryListItem({
   entry,
 }: {
-  entry: Awaited<ReturnType<typeof loader>>[number];
+  entry: Awaited<ReturnType<typeof loader>>["entries"][number];
 }) {
   return (
     <li className="group">
