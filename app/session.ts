@@ -4,5 +4,6 @@ export const { getSession, commitSession, destroySession } =
   createCookieSessionStorage({
     cookie: {
       name: "work-journal-session",
+      secrets: ["work-journal-secret-1834"],
     },
   });
