@@ -1,11 +1,10 @@
 import { Form, useLoaderData } from "@remix-run/react";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { getSession, commitSession } from "~/session";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const isAdmin = request.headers.get("cookie")?.match(/admin=1/);
-  return {
-    isAdmin,
-  };
+  const session = await getSession(request.headers.get("cookie"));
+  return session.data;
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -15,10 +14,11 @@ export async function action({ request }: ActionFunctionArgs) {
     throw new Error("Bad request");
   }
   if (email === "test@example.com" && password === "password") {
-    console.log("success");
+    const session = await getSession();
+    session.set("isAdmin", true);
     return new Response("", {
       headers: {
-        "Set-Cookie": "admin=1",
+        "Set-Cookie": await commitSession(session),
       },
     });
   } else {
@@ -29,11 +29,10 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function LoginPage() {
   const data = useLoaderData<typeof loader>();
-  console.log("data", data);
 
   return (
     <div className="mt-8">
-      {data?.isAdmin ? (
+      {data.isAdmin ? (
         "You are signed in"
       ) : (
         <Form method="post">
