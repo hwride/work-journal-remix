@@ -83,11 +83,6 @@ export default function Index() {
 
   return (
     <div>
-      <div className="mt-4">
-        <p className="font-bold">
-          Week of January 22<sup>nd</sup>
-        </p>
-      </div>
       {session.isAdmin ? (
         <div className="my-8 border p-3">
           <EntryForm />
